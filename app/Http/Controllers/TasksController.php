@@ -46,6 +46,7 @@ class TasksController extends Controller
         // タスクを作成
         $task = new Task;
         $task->content = $request->content;
+        $task->status = $request->status;
         $task->save();
         //save()はmodelのinsertに対応
 
