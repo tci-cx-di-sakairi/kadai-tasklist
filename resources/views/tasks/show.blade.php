@@ -12,6 +12,7 @@
                 <tr>
                     <th>id</th>
                     <th>タスク</th>
+                    <th>ステータス</th>
                     <th>作成日</th>
                 </tr>
             </thead>
@@ -19,6 +20,7 @@
                 <tr>
                     <td>{{ $task->id }}</td>
                     <td>{{ $task->content }}</td>
+                    <td>{{ $task->status }}</td>
                     <td>{{ $task->created_at }}</td>
                 </tr>
             </tbody>
