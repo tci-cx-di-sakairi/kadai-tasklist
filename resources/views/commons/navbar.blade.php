@@ -7,8 +7,7 @@
 
         <div class="flex-none">
             <ul tabindex="0" class="menu lg:block lg:menu-horizontal">
-                {{-- メッセージ作成ページへのリンク --}}
-                <li><a class="link link-hover" href="{{ route('tasks.index') }}">タスク一覧</a></li>
+                {{-- タスク作成ページへのリンク --}}
                 <li><a class="link link-hover" href="{{ route('tasks.create') }}">作成ページ</a></li>
             </ul>
         </div>
