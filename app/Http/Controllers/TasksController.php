@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\User;
 
 class TasksController extends Controller
 {
@@ -13,11 +14,19 @@ class TasksController extends Controller
     public function index()
     {
         //タスク一覧を取得
-        $tasks = Task::all();
+        $data = [];
+        if (\Auth::check()) {
+            $user = \Auth::user();
 
-        return view("tasks.index", [
-            "tasks" => $tasks,
-        ]);
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+        }
+
+        return view('dashboard', $data);
+
     }
 
     /**
@@ -44,13 +53,11 @@ class TasksController extends Controller
         ]);
 
         // タスクを作成
-        $task = new Task;
-        $task->content = $request->content;
-        $task->status = $request->status;
-        $task->save();
-        //save()はmodelのinsertに対応
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status,
+        ]);
 
-        // トップページへリダイレクトさせる
         return redirect('/');
     }
 
@@ -59,8 +66,19 @@ class TasksController extends Controller
      */
     public function show(string $id)
     {
+
+        if (!\Auth::check()) {
+            return redirect('/');
+        }
+
+        $user_id = \Auth::user()->id;
+
         //タスクをIDで検索
         $task = Task::findOrFail($id);
+
+        if($task->user_id !== $user_id){
+            return redirect('/');
+        }
 
         return view("tasks.show", [
             "task" => $task,
@@ -94,6 +112,7 @@ class TasksController extends Controller
         $task = Task::findOrFail($id);
         // メッセージを更新
         $task->content = $request->content;
+        $task->status = $request->status;
         $task->save();
 
         // トップページへリダイレクトさせる
@@ -103,14 +122,20 @@ class TasksController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string $id)
     {
-        // idの値でメッセージを検索して取得
+        // idの値で投稿を検索して取得
         $task = Task::findOrFail($id);
-        // メッセージを削除
-        $task->delete();
 
-        // トップページへリダイレクトさせる
-        return redirect('/');
+        // 認証済みユーザー（閲覧者）がその投稿の所有者である場合は投稿を削除
+        if (\Auth::id() === $task->user_id) {
+            $task->delete();
+            return back()
+                ->with('success','Delete Successful');
+        }
+
+        // 前のURLへリダイレクトさせる
+        return back()
+            ->with('Delete Failed');
     }
 }

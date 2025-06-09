@@ -2,11 +2,12 @@
 
 @section('content')
 
+    @if (isset($task) && Auth::id() == $task->user_id)
+
     <div class="prose ml-4">
-        <h2 class="text-lg">タスク一覧</h2>
+        <h2 class="text-lg">id:{{ $task->id }}のタスク</h2>
     </div>
 
-    @if (isset($task))
         <table class="table table-zebra w-full my-4">
             <thead>
                 <tr>
@@ -37,6 +38,13 @@
             <button type="submit" class="btn btn-error btn-outline"
                 onclick="return confirm('id = {{ $task->id }} のタスクを削除します。よろしいですか？')">削除</button>
         </form>
+
+    @else
+
+    <div class="prose ml-4">
+        <h2 class="text-lg text-red">id:{{ $task->id }}のタスクはあなたのものではありません。</h2>
+    </div>
+
 
     @endif
 

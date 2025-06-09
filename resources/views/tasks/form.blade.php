@@ -1,7 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
-
+@if (Auth::id() == $user->id)
     <div class="prose ml-4">
         <h2 class="text-lg">タスクを新規作成ページ</h2>
     </div>
@@ -24,5 +21,4 @@
             <button type="submit" class="btn btn-primary btn-outline">登録</button>
         </form>
     </div>
-
-@endsection
+@endif
